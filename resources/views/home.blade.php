@@ -1,9 +1,8 @@
-@if(Auth::user()->rol == "Consulta")
-    @php($vista='consulta')
-@elseif(Auth::user()->rol=="Administrador")
-    @php($vista='app')
-@elseif(Auth::user()->rol=="Auxiliar administrativo")
-    @php($vista='auxiliar')
+@if(Auth::user()->rol == "Administradores")
+    @php($vista='administradores')
+    
+@elseif(Auth::user()->rol=="Clientes")
+    @php($vista='clientes')
 @endif
 
 
@@ -11,6 +10,9 @@
 
 @section('content')
 <div class="container">
+    @if(Auth::user()->rol == "Administradores")
+        @include('partials/admimenu')
+    @endif
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">

@@ -26,11 +26,12 @@
             <div class="container">
             <ul>
                 <li class="nav-item">
-                    <a class="nav-link" href="">{{ __('Catálogo de libros') }}</a>
+                    <a class="nav-link" href="">{{ __('Cantantes del genero urbano') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{route('empleados.edit',Auth::user()->id)}}">{{ __('Actualizar datos') }}</a>
+                    <a class="nav-link" href="{{route('administradores.edit',Auth::user()->id)}}">{{ __('Actualizar datos') }}</a>
                 </li>
+                
             </ul>
                 @include('layouts.perfil')
             </div>
