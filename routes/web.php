@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdmifuncionesController;
+use App\Http\Controllers\IngresosController;
+use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +17,11 @@ use App\Http\Controllers\AdmifuncionesController;
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
 });
+
 
 Auth::routes();
 
@@ -37,14 +42,15 @@ Route::get('clientes/crear', 'App\Http\Controllers\AdmifuncionesController@creat
 Route::post('clientes/agregar', 'App\Http\Controllers\AdmifuncionesController@store')->name('admifunciones.store');
 Route::get('clientes/editar/{id}', 'App\Http\Controllers\AdmifuncionesController@edit')->name('admifunciones.edit');
 Route::get('clientes/actualizar/{id}', 'App\Http\Controllers\AdmifuncionesController@update')->name('admifunciones.update');
+Route::get('/admifunciones/search', [AdmifuncionesController::class, 'search'])->name('admifunciones.search');
+Route::get('/admifunciones/destroy/{id}', [AdmifuncionesController::class, 'destroy'])->name('admifunciones.destroy');
 
-Route::get('ingresos/index', 'App\Http\Controllers\IngresosController@index')->name('ingresos.index');
-Route::get('ingresos/crear', 'App\Http\Controllers\IngresosController@create')->name('ingresos.create');
-Route::post('/ingresos/agregar', 'App\Http\Controllers\IngresosController@store')->name('ingresos.store');
-Route::post('/ingresos/salida', 'App\Http\Controllers\IngresosController@salida')->name('ingresos.salida');
-Route::get('ingresos/editar/{id}', 'App\Http\Controllers\IngresosController@edit')->name('ingresos.edit');
-Route::post('ingresos/actualizar/{id}', 'App\Http\Controllers\IngresosController@update')->name('ingresos.update');
-Route::get('ingresos/eliminar/{id}', 'App\Http\Controllers\IngresosController@destroy')->name('ingresos.destroy');
+Route::get('ingresos', [IngresosController::class, 'index'])->name('ingresos.index');
+Route::get('ingresos/create', [IngresosController::class, 'create'])->name('ingresos.create');
+Route::post('ingresos', [IngresosController::class, 'store'])->name('ingresos.store');
+Route::get('ingresos/{ingreso}/edit', [IngresosController::class, 'edit'])->name('ingresos.edit');
+Route::put('ingresos/{ingreso}', [IngresosController::class, 'update'])->name('ingresos.update');
+
 
 
 

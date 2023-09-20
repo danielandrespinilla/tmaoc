@@ -1,45 +1,42 @@
-@extends('indexinicio')
+@extends('../indexinicio')
 @section('contenidobd')
 <div class="container">
-    <a href="{{route('ingresos.create')}}"><button class="btn btn-primary">Crear Fecha</button></a>
-    <div class="table-responsive">
-        <table class="table"> 
-            <thead class="table-dark text-center">
-                {{-- Primera fila --}}
-                <tr>
-                    <th>Codigo</th>
-                    <th>Fecha ingreso </th>
-                    <th>Fecha Salida</th>
-                    <th colspan="3">Acciones</th>
-                </tr>
-            </thead>
-            
-            <tbody class="table-group-divider">
-        
-                {{-- Segunda fila --}}
-                @forelse($ingresos as $fila)
-                
-                <tr>
-                    <td>{{ $fila->idingreso }}</td>
-                    <td>{{ $fila->fechahoraingreso }}</td>
-                    <td>{{ $fila->fechahorasalida }}</td>
-                    <td class="text-center">
-                        <form action="{{route('ingresos.salida', $fila->idingreso)}}" method="POST">
-                            
-                            @csrf
-                            <button class="btn btn-success">Fecha Saliada</button>
-                        </form>
-                        <a href="{{route('ingresos.edit', $fila->idingreso)}}"><button class="btn btn-info">Editar Fecha</button></a>
-                        <a href="{{route('ingresos.destroy', $fila->idingreso)}}" onclick="return confirm('¿Esta seguro de eliminar las fechas de ingreso y salida ?')"><button class="btn btn-danger">Eliminar Fecha</button></a>
-                       
-                    </td>
+    <h1>Listado de Ingresos</h1>
 
-                </tr>
-                @empty
-                <h1>No existen los valores</h1>
-                @endforelse
-            </tbody>
-        </table>
-        </div>
-    </div>
+    <!-- Agrega un enlace para crear un nuevo ingreso -->
+    <a href="{{ route('ingresos.create') }}" class="btn btn-primary">Crear Ingreso</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Número de Placa</th>
+                <th>Modelo</th>
+                <th>Marca del Vehículo</th>
+                <th>Fecha y Hora de Ingreso</th>
+                <th>Fecha y Hora de Salida</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            @forelse ($ingresos as $fila)
+            <tr>
+                <td>{{ $fila->idingreso }}</td>
+                <td>{{ $fila->numeroplaca }}</td>
+                <td>{{ $fila->modelo }}</td>
+                <td>{{ $fila->nombre_marca }}</td>
+                <td>{{ $fila->fechahoraingreso }}</td>
+                <td>{{ $fila->fechahorasalida }}</td>
+                <td>
+                    <a href="{{ route('ingresos.edit', $fila->idingreso) }}" class="btn btn-primary">Editar</a>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="7"><h1>No existen valores</h1></td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 @endsection

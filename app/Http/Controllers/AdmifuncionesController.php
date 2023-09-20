@@ -73,7 +73,7 @@ class AdmifuncionesController extends Controller
             $clientes->nombre = $request['nombre'];
             $clientes->apellido = $request['apellido'];
             $clientes->numerodocumento = $request['numerodocumento'];
-            $clientes->activo = 0; // Cambiar el estado a inactivo (0 representa inactivo)
+        // Cambiar el estado a inactivo (0 representa inactivo)
            
         }
     
@@ -88,9 +88,38 @@ class AdmifuncionesController extends Controller
      */
     public function destroy(string $id)
     {
+        // Buscar el cliente por su ID
+        $cliente = Clientes::where('idcliente', $id)->first();
         
-    
+        if ($cliente) {
+            // Marcar el cliente como inactivo (0 representa inactivo)
+            $cliente->activo = 0;
+            dd($cliente);
+        }
+        
+        return redirect()->route('admifunciones.index');
     }
+    
+    
+ 
+    
+
+    public function search(Request $request)
+    {
+        // Obtener el término de búsqueda del formulario
+        $term = $request->input('search');
+
+        // Realizar la búsqueda en la base de datos
+        $clientes = Clientes::where('nombre', 'LIKE', "%$term%")
+            ->orWhere('apellido', 'LIKE', "%$term%")
+            ->orWhere('numerodocumento', 'LIKE', "%$term%")
+            ->orderBy('nombre', 'ASC') // Puedes ordenar los resultados según tus preferencias
+            ->get();
+
+        // Pasar los resultados de la búsqueda a la vista
+        return view('admifunciones.index', ['clientes' => $clientes]);
+    }
+
 
        
     
