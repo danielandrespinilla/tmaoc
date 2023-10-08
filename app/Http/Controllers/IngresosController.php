@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ingresos;
+use App\Models\Vehiculos;
+use App\Models\Marcas;
 
 class IngresosController extends Controller
 {
@@ -41,15 +43,38 @@ class IngresosController extends Controller
 
     public function store(Request $request)
     {
-        // Valida y almacena la información de ingresos$ingresos en la base de datos
+        // Valida y almacena la información en la base de datos
+        $request->validate([
+            'numeroplaca' => 'required|string',
+            'modelo' => 'required|string',
+            'nombre_marca' => 'required|string',
+            'fechahoraingreso' => 'required|date',
+            'fechahorasalida' => 'required|date',
+        ]);
+    
+        // Primero, crea un nuevo registro en la tabla "vehiculos"
+        $vehiculo = new Vehiculos();
+        $vehiculo->numeroplaca = $request->input('numeroplaca');
+        $vehiculo->modelo = $request->input('modelo');
+        $vehiculo->save();
+    
+        // Luego, crea un nuevo registro en la tabla "marcas"
+        $marca = new Marcas();
+        $marca->nombre = $request->input('nombre_marca');
+        $marca->save();
+    
+        // Finalmente, crea un nuevo registro en la tabla "ingresos" y relaciona los IDs
         $ingresos = new Ingresos();
+       // Asigna el ID de la marca creada anteriormente
         $ingresos->fechahoraingreso = $request->input('fechahoraingreso');
         $ingresos->fechahorasalida = $request->input('fechahorasalida');
         $ingresos->save();
-
+    
         // Redirecciona a la página de listado de ingresos u otra vista
         return redirect()->route('ingresos.index');
     }
+    
+
 
 
    

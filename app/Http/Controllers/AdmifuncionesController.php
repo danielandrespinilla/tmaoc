@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Clientes;
+use App\Models\Ciudades;
+use App\Models\Departamentos;
 
 class AdmifuncionesController extends Controller
 {
@@ -12,10 +14,20 @@ class AdmifuncionesController extends Controller
      */
     public function index()
     {
-        //
-        $clientes = Clientes::orderBy('nombre','ASC')->get();
-        return view('admifunciones/index',['clientes'=>$clientes]);
+        // Realiza un join con las tablas ciudades y departamentos utilizando alias
+        $clientes = Clientes::join('ciudades as c', 'clientes.idciudad', '=', 'c.idciudad')
+            ->join('departamentos as d', 'c.iddepartamento', '=', 'd.iddepartamento')
+            ->orderBy('clientes.nombre', 'ASC')
+            ->get([
+                'clientes.*', // Esto seleccionará todos los campos de la tabla clientes
+                'c.nombre as ciudad_nombre', // Alias para el nombre de ciudad
+                'd.nombre as departamento_nombre' // Alias para el nombre de departamento
+            ]);
+
+        return view('admifunciones/index', compact('clientes'));
     }
+    
+    
 
     /**
      * Show the form for creating a new resource.
@@ -23,7 +35,8 @@ class AdmifuncionesController extends Controller
     public function create()
     {
         //
-        return view('admifunciones/create');
+        $departamentos = Departamentos::orderBy('nombre','ASC')->get();
+         return view('admifunciones/create',['departamentos'=>$departamentos]);
     }
 
     /**
@@ -54,31 +67,37 @@ class AdmifuncionesController extends Controller
      */
     public function edit(string $id)
     {
-        //        $cantidadclientes = Clientes::where('user_id', '=', $id)->count();
+        
 
         $clientes = Clientes::where('idcliente', '=', $id)->get();
-        return view('admifunciones/edit',['clientes' =>$clientes]);
+        return view('admifunciones/edit',['clientes'=>$clientes]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        // Buscar el clientes$clientes por su ID y obtener un modelo único
-        $clientes = Clientes::where('idcliente','=', $id)->first();
+  
+     public function update(Request $request, $id)
+     {
+       
+         $request->validate([
+             'nombre' => 'required|string',
+             'apellido' => 'required|string',
+             'numerodocumento' => 'required|string',
+         ]);
+     
+         // Actualiza el cliente en la base de datos
+         Clientes::where('idcliente', $id)->update([
+             'nombre' => $request->input('nombre'),
+             'apellido' => $request->input('apellido'),
+             'numerodocumento' => $request->input('numerodocumento'),
+         ]);
+     
+         
+         return redirect()->route('admifunciones.index');
+     }
+  
     
-        if ($clientes) {
-            // Actualizar los campos del clientes$clientes y marcarlo como inactivo (desactivado)
-            $clientes->nombre = $request['nombre'];
-            $clientes->apellido = $request['apellido'];
-            $clientes->numerodocumento = $request['numerodocumento'];
-        // Cambiar el estado a inactivo (0 representa inactivo)
-           
-        }
-    
-        return redirect()->route('admifunciones.index');
-    }
     
     
     
@@ -89,18 +108,20 @@ class AdmifuncionesController extends Controller
     public function destroy(string $id)
     {
         // Buscar el cliente por su ID
-        $cliente = Clientes::where('idcliente', $id)->first();
-        
-        if ($cliente) {
-            // Marcar el cliente como inactivo (0 representa inactivo)
-            $cliente->activo = 0;
-            dd($cliente);
-        }
-        
-        return redirect()->route('admifunciones.index');
+
     }
-    
-    
+    public function desactivarCliente(string $idcliente)
+    {
+        Clientes::where('idcliente', $idcliente)->update([
+            'activo' => "0"
+        ]);
+        
+        return redirect()->route('admifunciones.index'); 
+    }    
+    public function consultarCiudades(string $id){
+        $ciudades = Ciudades::where('iddepartamento', $id)->orderBy('nombre', 'ASC')->get();
+        return $ciudades;
+    }
  
     
 
