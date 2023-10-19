@@ -33,8 +33,9 @@
     <nav>
         <ul>
             <li><a href="{{ route('admifunciones.index') }}">Clientes</a></li>
+            <li><a href="{{ route('vehiculos.index') }}">Listado de  vehiculos</a></li>
             <li><a href="{{ route('ingresos.index') }}">Ingreso de los Clientes</a></li>
-            <li><a href="{{ route('vehiculos.index') }}">Reportes vehiculos</a></li>
+         
         </ul>
     </nav>
 

@@ -36,13 +36,13 @@ Route::get('administrador/actualizar/{id}','AdministradoresController@edit')->na
 Route::get('administrador/update/{id}','AdministradoresController@update')->name('administradores.update');
 
 Route::get('clientes/index', 'App\Http\Controllers\AdmifuncionesController@index')->name('admifunciones.index');
-Route::get('clientes/crear', 'App\Http\Controllers\AdmifuncionesController@create')->name('admifunciones.create');
 Route::post('clientes/agregar', 'App\Http\Controllers\AdmifuncionesController@store')->name('admifunciones.store');
 Route::get('clientes/editar/{id}', 'App\Http\Controllers\AdmifuncionesController@edit')->name('admifunciones.edit');
 Route::post('clientes/actualizar/{id}', 'App\Http\Controllers\AdmifuncionesController@update')->name('admifunciones.update');
 Route::get('/admifunciones/search', [AdmifuncionesController::class, 'search'])->name('admifunciones.search');
 Route::get('/admifunciones/desactivar/{id}', [AdmifuncionesController::class, 'desactivarCliente'])->name('admifunciones.desactivarCliente');
-Route::get('/admifunciones/buscarciudades/{id}', 'AdmifuncionesController@consultarCiudades');
+Route::get('clientes/crear', 'App\Http\Controllers\AdmifuncionesController@create')->name('admifunciones.create');
+Route::get('/clientes/buscarciudades/{id}', 'AdmifuncionesController@consultarCiudades')->name('buscarciudades');
 
 
 
@@ -57,8 +57,14 @@ Route::put('ingresos/{ingreso}', [IngresosController::class, 'update'])->name('i
 
 Route::get('/vehiculos', [VehiculosController::class, 'index'])->name('vehiculos.index');
 Route::get('/vehiculos/create/{numeroplaca}', 'VehiculosController@create')->name('vehiculos.create');
-Route::post('/vehiculos/generar-reporte', 'VehiculosController@generarReporte')->name('vehiculos.generar-reporte');
+Route::post('/vehiculos/download-pdf', 'VehiculosController@downloadPDF')->name('vehiculos.download-pdf');
 Route::view('/vehiculos/reporte', 'vehiculos.reporte')->name('vehiculos.reporte');
+Route::post('/vehiculos/generar-reporte', 'VehiculosController@generarReporte')->name('vehiculos.generar-reporte');
+Route::get('/buscar-vehiculos', 'VehiculosController@search')->name('vehiculos.buscar');
+
+
+
+
 
 
 

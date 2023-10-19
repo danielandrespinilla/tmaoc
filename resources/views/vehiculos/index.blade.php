@@ -2,10 +2,20 @@
 @section('contenidobd')
 <div class="container">
     <h1>Listado de Vehículos</h1>
+
+    <!-- Formulario de búsqueda -->
+    <form method="GET" action="{{ route('vehiculos.buscar') }}" class="form-inline mb-2">
+        @csrf
+        <div class="form-group">
+            <input type="text" name="search" class="form-control" placeholder="Buscar por número de placa o modelo">
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
     <table class="table">
         <thead>
             <tr>
-                <th>ID Vehiculo</th> <!-- Nueva columna -->
+                <th>ID Vehiculo</th>
                 <th>Número de Placa</th>
                 <th>Modelo</th>
                 <th>Marca</th>
@@ -27,7 +37,6 @@
                         <form method="POST" action="{{ route('vehiculos.generar-reporte') }}">
                             @csrf
                             <input type="hidden" name="numeroplaca" value="{{ $vehiculo->numeroplaca }}">
-                            <!-- Resto del formulario... -->
                             <button type="submit" class="btn btn-primary">Crear Reporte</button>
                         </form>
                     </td>

@@ -34,10 +34,19 @@ class AdmifuncionesController extends Controller
      */
     public function create()
     {
-        //
-        $departamentos = Departamentos::orderBy('nombre','ASC')->get();
-         return view('admifunciones/create',['departamentos'=>$departamentos]);
+        $departamentos = Departamentos::orderBy('nombre', 'ASC')->get();
+        return view('admifunciones.create', ['departamentos' => $departamentos]);
     }
+
+    public function consultarCiudades( $id)
+    {
+       
+        $ciudades = Ciudades::where('iddepartamento', $id)->orderBy('nombre', 'ASC')->get();
+        return ($ciudades);
+    }
+    
+    
+    
 
     /**
      * Store a newly created resource in storage.
@@ -49,7 +58,8 @@ class AdmifuncionesController extends Controller
             'nombre'=>$request['nombre'] ,
             'apellido' => $request['apellido'],
             'numerodocumento' => $request['numerodocumento'],
-            /*Nombre del name del input*/
+            'idciudad'=> $request['ciudad'],
+            'iddepartamento'=> $request['depto']
             ]);
             return redirect()->route('admifunciones.index');
     }
@@ -118,10 +128,7 @@ class AdmifuncionesController extends Controller
         
         return redirect()->route('admifunciones.index'); 
     }    
-    public function consultarCiudades(string $id){
-        $ciudades = Ciudades::where('iddepartamento', $id)->orderBy('nombre', 'ASC')->get();
-        return $ciudades;
-    }
+    
  
     
 
@@ -129,17 +136,18 @@ class AdmifuncionesController extends Controller
     {
         // Obtener el término de búsqueda del formulario
         $term = $request->input('search');
-
-        // Realizar la búsqueda en la base de datos
+    
+        // Realizar la búsqueda en la tabla de clientes
         $clientes = Clientes::where('nombre', 'LIKE', "%$term%")
             ->orWhere('apellido', 'LIKE', "%$term%")
             ->orWhere('numerodocumento', 'LIKE', "%$term%")
             ->orderBy('nombre', 'ASC') // Puedes ordenar los resultados según tus preferencias
             ->get();
-
+    
         // Pasar los resultados de la búsqueda a la vista
         return view('admifunciones.index', ['clientes' => $clientes]);
     }
+    
 
 
        
