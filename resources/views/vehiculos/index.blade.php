@@ -11,6 +11,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
+    <a href="{{ route('vehiculos.create') }}"><button class="btn btn-success">Crear</button></a>
 
     <table class="table">
         <thead>
@@ -34,12 +35,9 @@
                     <td>{{ $vehiculo->ciudad_nombre }}</td>
                     <td>{{ $vehiculo->departamento_nombre }}</td>
                     <td>
-                        <form method="POST" action="{{ route('vehiculos.generar-reporte') }}">
-                            @csrf
-                            <input type="hidden" name="numeroplaca" value="{{ $vehiculo->numeroplaca }}">
-                            <button type="submit" class="btn btn-primary">Crear Reporte</button>
-                        </form>
+                        <a href="{{ route('vehiculos.edit',$vehiculo->idvehiculo) }}"><button class="btn btn-warning">Editar</button></a>
                     </td>
+                   
                 </tr>
             @endforeach
         </tbody>

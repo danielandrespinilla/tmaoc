@@ -63,5 +63,5 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     var buscarCiudadesRoute = '{{ route("buscarciudades", ":id") }}';
-  </script>
+</script>
 @endsection

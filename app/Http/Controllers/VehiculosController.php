@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Vehiculos;
 use App\Models\Revisiones;
+use App\Models\Ingresos;
+use App\Models\Ciudades;
+use App\Models\Departamentos;
 use PDF;
 
 class VehiculosController extends Controller
@@ -22,68 +25,88 @@ class VehiculosController extends Controller
             return view('vehiculos.index', compact('vehiculos'));
         }
 
-        public function generarReporte(Request $request)
+        public function create()
         {
-            // Obtener los datos del formulario
-            $numeroplaca = $request->input('numeroplaca');
-            $titulo = $request->input('titulo');
-            $observaciones = $request->input('observaciones');
-            $firma = $request->input('firma');
-            $fechaActual = now()->format('Y-m-d H:i:s');
+            // Recupera la lista de departamentos desde tu modelo Departamentos
+            $departamentos = Departamentos::all();
         
-            // Almacena los datos en una sesión para que estén disponibles en la siguiente vista
-            $reporteData = [
-                'numeroplaca' => $numeroplaca,
-                'titulo' => $titulo,
-                'observaciones' => $observaciones,
-                'firma' => $firma,
-                'fechaActual' => $fechaActual,
-            ];
+            return view('vehiculos.create', compact('departamentos'));
+        }
+        public function buscar(Request $request)
+        {
+            $term = $request->input('search');
+
+            $revisiones = Revision::join('vehiculos', 'revisiones.idvehiculo', '=', 'vehiculos.idvehiculo')
+                ->join('marcas', 'vehiculos.idmarca', '=', 'marcas.idmarca')
+                ->where('vehiculos.numeroplaca', 'LIKE', "%$term%")
+                ->orWhere('vehiculos.modelo', 'LIKE', "%$term%")
+                ->orWhere('marcas.nombre', 'LIKE', "%$term%")
+                ->select('revisiones.*')
+                ->get();
+
+            return view('revisiones.index', compact('revisiones'));
+        }
+
         
-            $request->session()->put('reporteData', $reporteData);
+    
+        public function store(Request $request)
+        {
+            // Valida y almacena la información en la base de datos
+            $request->validate([
+                'numeroplaca' => 'required|string',
+                'modelo' => 'required|string',
+                'nombre_marca' => 'required|string',
+                'idciudad'=> $request['ciudad'],
+                'iddepartamento'=> $request['depto']
+               
+            ]);
         
-            // Redirige a la vista de creación del reporte
-            return redirect()->route('vehiculos.create', ['numeroplaca' => $numeroplaca]);
+            // Primero, crea un nuevo registro en la tabla "vehiculos"
+            $vehiculo = new Vehiculos();
+            $vehiculo->numeroplaca = $request->input('numeroplaca');
+            $vehiculo->modelo = $request->input('modelo');
+            $vehiculo->save();
+        
+            // Luego, crea un nuevo registro en la tabla "marcas"
+            $marca = new Marcas();
+            $marca->nombre = $request->input('nombre_marca');
+            $marca->save();
+        
+            // Finalmente, crea un nuevo registro en la tabla "vehiculos" y relaciona los IDs
+           
+        
+            // Redirecciona a la página de listado de vehiculos u otra vista
+            return redirect()->route('vehiculos.index');
+        }
+        public function consultarCiudades( $id)
+        {
+           
+            $ciudades = Ciudades::where('iddepartamento', $id)->orderBy('nombre', 'ASC')->get();
+            return ($ciudades);
+        }
+    
+        /**
+         * Display the specified resource.
+         */
+        public function show(string $id)
+        {
+            //
+        }
+    
+        /**
+         * Show the form for editing the specified resource.
+         */
+        public function edit(string $id)
+        {
+            $vehiculos = Vehiculos::where('idvehiculo', '=', $id)->get();
+            $departamentos = Departamentos::orderBy('nombre', 'ASC')->get(); // Obtén los departamentos
+        
+            return view('vehiculos/edit', compact('vehiculos', 'departamentos'));
         }
         
-        public function downloadPDF(Request $request)
-        {
-            // Obtén los datos almacenados en la sesión
-            $reporteData = $request->session()->get('reporteData');
         
-            // Agrega el autor (siempre está presente) al array de datos
-            $reporteData['autor'] = 'DANIEL ANDRES PINILLA';
+       
         
-            // Generar el PDF
-            $pdf = PDF::loadView('vehiculos.reporte', $reporteData);
-        
-            // Establecer el nombre del archivo PDF para la descarga
-            $pdfFileName = 'reporte_' . $reporteData['numeroplaca'] . '.pdf';
-        
-            // Descargar el PDF directamente
-            return $pdf->download($pdfFileName);
-        }
-        
-        public function create($numeroplaca)
-        {
-            $reporteData = session('reporteData');
-        
-            if (!$reporteData) {
-                return redirect()->route('vehiculos.index')->with('error', 'Los datos del reporte no están disponibles.');
-            }
-        
-            $vehiculo = Vehiculos::where('numeroplaca', $numeroplaca)->first();
-        
-            if (!$vehiculo) {
-                return redirect()->route('vehiculos.index')->with('error', 'El vehículo no se encontró.');
-            }
-        
-            $titulo = $reporteData['titulo'] ?? ''; // Obtener el título del reporte
-            $observaciones = $reporteData['observaciones'] ?? ''; // Obtener las observaciones del reporte
-            $firma = $reporteData['firma'] ?? ''; // Obtener la firma del reporte
-        
-            return view('vehiculos.create', compact('numeroplaca', 'vehiculo', 'reporteData', 'titulo', 'observaciones', 'firma'));
-        }
 
         public function search(Request $request)
         {
@@ -101,38 +124,47 @@ class VehiculosController extends Controller
         }
 
 
-
-   
-
-      
-
-    
-
-    // Resto de los métodos del controlador
-
-
-
-        public function store(Request $request)
+        public function update(Request $request, $id)
         {
+            // Valida y almacena la información actualizada en la base de datos
+            $request->validate([
+                'numeroplaca' => 'required|string',
+                'modelo' => 'required|string',
+                'nombre_marca' => 'required|string',
+                'idciudad' => $request['ciudad'],
+                'iddepartamento' => $request['depto']
+            ]);
+
+            // Busca el vehículo que se va a actualizar
+            $vehiculo = Vehiculos::find($id);
+
+            if (!$vehiculo) {
+                // Puedes manejar la situación en la que el vehículo no se encuentre
+                // Puedes redirigir, mostrar un mensaje de error, etc.
+                return redirect()->route('vehiculos.index')->with('error', 'El vehículo no se encontró.');
+            }
+
+            // Actualiza los campos del vehículo
+            $vehiculo->numeroplaca = $request->input('numeroplaca');
+            $vehiculo->modelo = $request->input('modelo');
+            $vehiculo->save();
+
+            // También puedes actualizar la marca si fuera necesario
+            $marca = Marcas::where('nombre', $request->input('nombre_marca'))->first();
+
+            if (!$marca) {
+                $marca = new Marcas();
+                $marca->nombre = $request->input('nombre_marca');
+                $marca->save();
+            }
+
+            // Relaciona los IDs y guarda las relaciones en las tablas de pivote si es necesario
+
+            // Redirecciona a la página de listado de vehículos u otra vista
+            return redirect()->route('vehiculos.index')->with('success', 'Vehículo actualizado exitosamente.');
         }
 
-        public function show(string $id)
-        {
-         
-        }
 
-        public function edit(string $id)
-        {
-            // Puedes agregar la lógica para editar un reporte específico si es necesario
-        }
 
-        public function update(Request $request, string $id)
-        {
-            // Puedes agregar la lógica para actualizar un reporte específico si es necesario
-        }
-
-        public function destroy(string $id)
-        {
-            // Puedes agregar la lógica para eliminar un reporte específico si es necesario
-        }
+       
 }

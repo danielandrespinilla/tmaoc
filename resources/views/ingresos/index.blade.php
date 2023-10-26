@@ -14,6 +14,7 @@
                 <th>Modelo</th>
                 <th>Marca del Vehículo</th>
                 <th>Fecha y Hora de Ingreso</th>
+                <th>Fecha y hora de Diagnostico</th>
                 <th>Fecha y Hora de Salida</th>
                 <th>Acciones</th>
             </tr>
@@ -26,6 +27,7 @@
                 <td>{{ $fila->modelo }}</td>
                 <td>{{ $fila->nombre_marca }}</td>
                 <td>{{ $fila->fechahoraingreso }}</td>
+                <td>{{ $fila->fechahoradiagnostico}}</td>
                 <td>{{ $fila->fechahorasalida }}</td>
                 <td>
                     <a href="{{ route('ingresos.edit', $fila->idingreso) }}" class="btn btn-primary">Editar</a>

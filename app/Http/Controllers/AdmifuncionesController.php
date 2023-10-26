@@ -23,9 +23,12 @@ class AdmifuncionesController extends Controller
                 'c.nombre as ciudad_nombre', // Alias para el nombre de ciudad
                 'd.nombre as departamento_nombre' // Alias para el nombre de departamento
             ]);
-
-        return view('admifunciones/index', compact('clientes'));
+    
+        $departamentos = Departamentos::orderBy('nombre', 'ASC')->get(); // Obtén los departamentos
+    
+        return view('admifunciones/index', compact('clientes', 'departamentos')); // Pasa ambas variables a la vista
     }
+    
     
     
 
@@ -77,11 +80,12 @@ class AdmifuncionesController extends Controller
      */
     public function edit(string $id)
     {
-        
-
         $clientes = Clientes::where('idcliente', '=', $id)->get();
-        return view('admifunciones/edit',['clientes'=>$clientes]);
+        $departamentos = Departamentos::orderBy('nombre', 'ASC')->get(); // Obtén los departamentos
+    
+        return view('admifunciones/edit', compact('clientes', 'departamentos'));
     }
+    
 
     /**
      * Update the specified resource in storage.

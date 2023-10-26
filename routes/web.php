@@ -5,6 +5,7 @@ use App\Http\Controllers\AdmifuncionesController;
 use App\Http\Controllers\IngresosController;
 use App\Http\Controllers\VehiculosController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\RevisionesController;
 
 
 /*
@@ -55,12 +56,31 @@ Route::put('ingresos/{ingreso}', [IngresosController::class, 'update'])->name('i
 
 
 
-Route::get('/vehiculos', [VehiculosController::class, 'index'])->name('vehiculos.index');
-Route::get('/vehiculos/create/{numeroplaca}', 'VehiculosController@create')->name('vehiculos.create');
-Route::post('/vehiculos/download-pdf', 'VehiculosController@downloadPDF')->name('vehiculos.download-pdf');
-Route::view('/vehiculos/reporte', 'vehiculos.reporte')->name('vehiculos.reporte');
-Route::post('/vehiculos/generar-reporte', 'VehiculosController@generarReporte')->name('vehiculos.generar-reporte');
-Route::get('/buscar-vehiculos', 'VehiculosController@search')->name('vehiculos.buscar');
+Route::get('/vehiculos', 'VehiculosController@index')->name('vehiculos.index');
+Route::get('/vehiculos/create', 'VehiculosController@create')->name('vehiculos.create');
+Route::post('/vehiculos', 'VehiculosController@store')->name('vehiculos.store');
+Route::get('/vehiculos/edit/{id}', 'VehiculosController@edit')->name('vehiculos.edit');
+Route::put('/vehiculos/update/{id}', 'VehiculosController@update')->name('vehiculos.update');
+Route::get('/vehiculos/show/{id}', 'VehiculosController@show')->name('vehiculos.show');
+Route::get('/vehiculos/buscar', 'VehiculosController@search')->name('vehiculos.buscar');
+Route::get('/ciudades/{id}', 'VehiculosController@consultarCiudades')->name('buscarciudades');
+
+
+
+// Rutas para Revisiones
+Route::get('/revisiones', [RevisionesController::class, 'index'])->name('revisiones.index');
+Route::get('/revisiones/create', 'RevisionesController@create')->name('revisiones.create');
+Route::post('/revisiones', 'RevisionesController@store')->name('revisiones.store');
+Route::get('/revisiones/{id}', 'RevisionesController@show')->name('revisiones.show');
+Route::get('/revisiones/{id}/edit', 'RevisionesController@edit')->name('revisiones.edit');
+Route::put('/revisiones/{id}', 'RevisionesController@update')->name('revisiones.update');
+Route::delete('/revisiones/{id}', 'RevisionesController@destroy')->name('revisiones.destroy');
+
+// Ruta para la vista de búsqueda de revisiones
+Route::get('revisiones/buscar', 'RevisionesController@search')->name('revisiones.buscar');
+Route::get('revisiones/{id}/report', 'RevisionesController@generateReport')->name('revisiones.report');
+
+
 
 
 
